@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(255, 255, 255, 0.1) 20px,
+                    rgba(255, 255, 255, 0.1) 40px
+            );
+            animation: drift 30s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translateX(-100px) translateY(-100px); }
+            100% { transform: translateX(100px) translateY(100px); }
+        }
+
+        .header-left {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-left h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 400;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-bus-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .add-bus-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-section {
+            padding: 40px;
+        }
+
+        .table-header {
+            margin-bottom: 25px;
+        }
+
+        .table-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #tripTable {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        #tripTable thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #tripTable thead th {
+            color: white;
+            font-weight: 600;
+            padding: 20px 15px;
+            text-align: left;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #tripTable tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        #tripTable tbody tr:hover {
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5f8 100%);
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #tripTable tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        #tripTable td {
+            padding: 18px 15px;
+            vertical-align: middle;
+            font-size: 0.95rem;
+        }
+
+        #tripTable td img {
+            width: 100px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        #tripTable td img:hover {
+            transform: scale(1.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .status-available {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .status-full {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        .status-cancelled {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .container {
+                margin: 10px;
+            }
+
+            .table-section {
+                padding: 20px;
+            }
+
+            #tripTable {
+                font-size: 0.9rem;
+            }
+
+            #tripTable td img {
+                width: 80px;
+                height: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .header-left h1 {
+                font-size: 2rem;
+            }
+
+            .table-section {
+                padding: 15px;
+                overflow-x: auto;
+            }
+
+            #tripTable {
+                min-width: 800px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #tripTable tbody tr {
+            animation: slideInRow 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        #tripTable tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        #tripTable tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        #tripTable tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        #tripTable tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        #tripTable tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideInRow {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <h1>🚌 Quản Lý Chuyến Xe</h1>
+            <p class="header-subtitle">Hệ thống quản lý các chuyến đi</p>
+        </div>
+        <a href="addBusTrip" class="add-bus-btn">
+            ➕ Thêm Chuyến Xe Mới
+        </a>
+    </div>
+
+    <div class="table-section">
+        <div class="table-header">
+            <div class="table-title">
+                📋 Danh Sách Chuyến Xe
+            </div>
+        </div>
+
+        <table id="tripTable">
+            <thead>
+            <tr>
+                <th>Mã chuyến</th>
+                <th>Hình ảnh</th>
+                <th>Điểm đi</th>
+                <th>Điểm đến</th>
+                <th>Thời gian khởi hành</th>
+                <th>Thời gian đến</th>
+                <th>Số ghế trống</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="obj, loop : ${busTrips}">
+                <td th:text="${obj.id}"></td>
+                <td><img th:src="${obj.image}" alt="Trip Image" style="width: 100px"></td>
+                <td th:text="${obj.departurePoint}"></td>
+                <td th:text="${obj.destination}"></td>
+                <td th:text="${obj.departureTime}"></td>
+                <td th:text="${obj.arrivalTime}"></td>
+                <td th:text="${obj.seatsAvailable}"></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{'updateBusTrip?id=' + ${obj.id}}" class="btn btn-edit">
+                            ✏️ Sửa
+                        </a>
+                        <a th:href="@{'deleteBusTrip?id=' + ${obj.id}}"
+                           class="btn btn-delete"
+                           onclick="return confirm('Bạn có chắc muốn xóa chuyến xe này?')">
+                            🗑️ Xóa
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(busTrips)}">
+                <td colspan="8" class="empty-state">
+                    <div class="empty-state-icon">🚌</div>
+                    <h3>Chưa có chuyến xe nào</h3>
+                    <p>Hãy thêm chuyến xe đầu tiên để bắt đầu quản lý</p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

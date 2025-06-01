@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Chuyến Xe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        /* Search Form Styling */
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 2fr 150px;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        select, input[type="text"] {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            outline: none;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Table Styling */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 20px 15px;
+            border-bottom: 1px solid #f1f3f4;
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #e3f2fd;
+            transform: scale(1.001);
+            transition: all 0.2s ease;
+        }
+
+        .bus-image {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .bus-image:hover {
+            transform: scale(1.1);
+        }
+
+        .book-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .seats-available {
+            background: #e8f5e8;
+            color: #2d5016;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .time-info {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .location {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        /* Pagination Styling */
+        .pagination-container {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .pagination-label {
+            color: #555;
+            font-weight: 600;
+            margin-right: 20px;
+            font-size: 1.1em;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 12px 18px;
+            margin: 0 5px;
+            background: #f8f9fa;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .pagination a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .pagination a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .prev-next {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+
+        .prev-next:hover {
+            background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+            font-size: 1.2em;
+        }
+
+        .no-results-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 1200px) {
+            .search-form {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .search-section {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
+
+            .bus-image {
+                width: 60px;
+                height: 45px;
+            }
+
+            .pagination a {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .image-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-tooltip:hover::after {
+            content: "Click để xem ảnh lớn";
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🚌 Danh Sách Chuyến Xe</h1>
+        <p class="subtitle">Tìm kiếm và đặt vé xe khách dễ dàng</p>
+    </div>
+
+    <div class="search-section">
+        <form action="listBusTrip" method="get" class="search-form" id="searchForm">
+            <div class="form-group">
+                <label for="type">Loại tìm kiếm</label>
+                <select name="type" id="type">
+                    <option value="START" th:selected="${type == 'START'}">🚀 Tìm kiếm theo điểm đi</option>
+                    <option value="END" th:selected="${type == 'END'}">🎯 Tìm kiếm theo điểm đến</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="keyword">Từ khóa tìm kiếm</label>
+                <input type="text" name="keyword" id="keyword" th:value="${keyword}"
+                       placeholder="Nhập tên thành phố hoặc địa điểm...">
+            </div>
+
+            <button type="submit" class="search-btn" id="searchBtn">
+                🔍 Tìm kiếm
+            </button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Mã chuyến</th>
+                <th>Hình ảnh</th>
+                <th>Điểm xuất phát</th>
+                <th>Điểm đến</th>
+                <th>Giờ khởi hành</th>
+                <th>Giờ đến nơi</th>
+                <th>Xe</th>
+                <th>Ghế trống</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="obj, loop : ${listBusTrip}" th:if="${not #lists.isEmpty(listBusTrip)}">
+                <td>
+                    <strong th:text="${obj.id}" style="color: #667eea;"></strong>
+                </td>
+                <td>
+                    <div class="image-tooltip">
+                        <img th:src="${obj.image}" alt="Bus Image" class="bus-image"
+                             onclick="openImageModal(this.src)">
+                    </div>
+                </td>
+                <td>
+                    <span class="location" th:text="${obj.departurePoint}"></span>
+                </td>
+                <td>
+                    <span class="location" th:text="${obj.destination}"></span>
+                </td>
+                <td>
+                    <span class="time-info" th:text="${obj.departureTime}"></span>
+                </td>
+                <td>
+                    <span class="time-info" th:text="${obj.arrivalTime}"></span>
+                </td>
+                <td th:text="${obj.busId}"></td>
+                <td>
+                    <span class="seats-available" th:text="${obj.seatsAvailable} + ' ghế'"></span>
+                </td>
+                <td>
+                    <button class="book-btn" onclick="bookTrip(this)"
+                            th:data-trip-id="${obj.id}">
+                        ✈️ Đặt xe
+                    </button>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(listBusTrip)}">
+                <td colspan="9" class="no-results">
+                    <div class="no-results-icon">🚌</div>
+                    <p>Không tìm thấy chuyến xe nào phù hợp</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #999;">
+                        Hãy thử tìm kiếm với từ khóa khác
+                    </p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination-container" th:if="${not #lists.isEmpty(listBusTrip)}">
+        <span class="pagination-label">📄 Trang:</span>
+
+        <a th:if="${pagination.page > 1}"
+           th:href="@{|/listBusTrip?page=${pagination.page - 1}&type=${type}&keyword=${keyword}|}"
+           class="prev-next">
+            ← Trang trước
+        </a>
+
+        <span th:each="obj, loop : ${#numbers.sequence(1, pagination.totalPages)}" class="pagination">
+                <a th:href="@{|/listBusTrip?page=${obj}&type=${type}&keyword=${keyword}|}"
+                   th:text="${obj}"
+                   th:classappend="${obj == pagination.page} ? 'active' : ''"></a>
+            </span>
+
+        <a th:if="${pagination.page < pagination.totalPages}"
+           th:href="@{|/listBusTrip?page=${pagination.page + 1}&type=${type}&keyword=${keyword}|}"
+           class="prev-next">
+            Trang sau →
+        </a>
+    </div>
+</div>
+
+<div id="imageModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center;" onclick="closeImageModal()">
+    <img id="modalImage" style="max-width: 90%; max-height: 90%; border-radius: 10px;">
+    <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; cursor: pointer;">&times;</span>
+</div>
+
+<script>
+    document.getElementById('searchForm').addEventListener('submit', function() {
+        const searchBtn = document.getElementById('searchBtn');
+        searchBtn.innerHTML = '🔍 Đang tìm kiếm... <span class="loading"></span>';
+        searchBtn.disabled = true;
+    });
+
+    function bookTrip(button) {
+        const tripId = button.getAttribute('data-trip-id');
+        button.innerHTML = '⏳ Đang xử lý...';
+        button.disabled = true;
+        setTimeout(() => {
+            alert(`Đặt xe thành công cho chuyến ${tripId}!`);
+            button.innerHTML = '✅ Đã đặt';
+            button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+        }, 1500);
+    }
+    function openImageModal(src) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        modal.style.display = 'flex';
+        modalImg.src = src;
+    }
+
+    function closeImageModal() {
+        document.getElementById('imageModal').style.display = 'none';
+    }
+    document.getElementById('keyword').focus();
+
+    document.getElementById('keyword').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('searchForm').submit();
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach((row, index) => {
+            row.style.animationDelay = `${index * 0.1}s`;
+            row.style.animation = 'slideUp 0.6s ease-out forwards';
+        });
+    });
+</script>
+</body>
+</html>
